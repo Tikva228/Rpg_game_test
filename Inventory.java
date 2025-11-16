@@ -1,52 +1,49 @@
 import java.util.ArrayList;
+import java.util.List;
 
 public class Inventory {
-
-    public ArrayList<Item> items = new ArrayList<>();
-    public String boxName;
+    private List<Integer> itemIds = new ArrayList<>();
+    private String inventoryName;
 
     public Inventory(String name) {
-        this.boxName = name;
+        this.inventoryName = name;
     }
 
-    public void add(Item item) {
-        items.add(item);
-        System.out.println("Add " + item.name + " in " + boxName);
+    public void addItem(int itemId, ItemRegistry registry) {
+        if (registry.getItemById(itemId) != null) {
+            itemIds.add(itemId);
+            System.out.println("Add: " + registry.getItemById(itemId).name + " in " + inventoryName);
+        }
     }
 
-    public void remove(String itemName) {
-        for (int i = 0; i < items.size(); i++) {
-            if (items.get(i).name.equals(itemName)) {
-                items.remove(i);
-                System.out.println("Remove " + itemName + " from " + boxName);
+    public void removeItem(int itemId, ItemRegistry registry) {
+        for (int i = 0; i < itemIds.size(); i++) {
+            if (itemIds.get(i) == itemId) {
+                itemIds.remove(i);
+                System.out.println("Remove: " + registry.getItemById(itemId).name + " from " + inventoryName);
                 return;
             }
         }
-
         System.out.println(": (");
-
     }
 
-    public void show() {
+    public void show(ItemRegistry registry) {
+        System.out.println("=== " + inventoryName + " ===");
 
-         System.out.println("--- " + boxName + " ---");
-         for (Item item : items) {
-             System.out.println("-" + item.name);
-         }
+        if (itemIds.isEmpty()) {
+            System.out.println("Empty");
+            return;
+        }
 
-         if (items.isEmpty()) {
-             System.out.println("Empty");
-         }
-
-    }
-
-    public boolean hasItem(String itemName) {
-        for (Item item : items) {
-            if (item.name.equals(itemName)) {
-                return true;
+        for (int id : itemIds) {
+            Item item = registry.getItemById(id);
+            if (item != null) {
+                System.out.println("- " + item.name + " [ID: " + id + "]");
             }
         }
-        return false;
     }
 
+    public boolean hasItem(int itemId) {
+        return itemIds.contains(itemId);
+    }
 }
