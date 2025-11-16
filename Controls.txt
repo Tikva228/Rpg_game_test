@@ -1,0 +1,9 @@
+w - up
+a - left
+s - down
+d - right
+bag
+chest
+take
+put
+exit
