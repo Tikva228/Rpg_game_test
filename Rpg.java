@@ -4,55 +4,57 @@ public class Rpg {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
 
+        // Исправлено: правильное название класса
+        ItemRegistry registry = new ItemRegistry();
+
         int x = 0;
         int y = 0;
 
         Inventory bag = new Inventory("Bag");
         Inventory chest = new Inventory("Chest");
 
-        Item sword = new Item("Sword");
-        Item potion = new Item("Potion");
-
-        chest.add(sword);
-        chest.add(potion);
+        // Добавляем предметы по ID (из реестра)
+        bag.addItem(1, registry);  // Деревянный меч
+        bag.addItem(2, registry); // Зелье здоровья
+        bag.addItem(3, registry); // Яблоко
 
         while(true) {
-
             System.out.println("Your coordinates: x: " +  x + " y: " +  y);
             System.out.println("Enter command: ");
             String input_com = input.nextLine().toLowerCase();
 
             switch (input_com) {
-
                 case "w": y++; break;
                 case "a": x--; break;
                 case "s": y--; break;
                 case "d": x++; break;
-                case "bag": bag.show(); break;
-                case "chest": chest.show(); break;
+                case "bag": bag.show(registry); break;
+                case "chest": chest.show(registry); break;
                 case "put":
-                    System.out.println("What subject do you want to put?");
-                    String itemToPut = input.nextLine();
-                    if (itemToPut.equalsIgnoreCase("sword") && bag.hasItem("Sword")) {
-                        bag.remove("Sword");
-                        chest.add(sword);
-                    } else if (itemToPut.equalsIgnoreCase("potion") && bag.hasItem("Potion")) {
-                        bag.remove("Potion");
-                        chest.add(potion);
-                    } else {
+                    System.out.println("Enter item ID to put from bag to chest:");
+                    try {
+                        int itemId = Integer.parseInt(input.nextLine());
+                        if (bag.hasItem(itemId)) {
+                            bag.removeItem(itemId, registry);
+                            chest.addItem(itemId, registry);
+                        } else {
+                            System.out.println(": (");
+                        }
+                    } catch (NumberFormatException e) {
                         System.out.println(": (");
                     }
                     break;
                 case "take":
-                    System.out.println("What subject do you want to take?");
-                    String itemToTake = input.nextLine();
-                    if (itemToTake.equalsIgnoreCase("sword") && chest.hasItem("Sword")) {
-                        chest.remove("Sword");
-                        bag.add(sword);
-                    } else if (itemToTake.equalsIgnoreCase("potion") && chest.hasItem("Potion")) {
-                        chest.remove("Potion");
-                        bag.add(potion);
-                    } else {
+                    System.out.println("Enter item ID to take from chest to bag:");
+                    try {
+                        int itemId = Integer.parseInt(input.nextLine());
+                        if (chest.hasItem(itemId)) {
+                            chest.removeItem(itemId, registry);
+                            bag.addItem(itemId, registry);
+                        } else {
+                            System.out.println(": (");
+                        }
+                    } catch (NumberFormatException e) {
                         System.out.println(": (");
                     }
                     break;
@@ -60,8 +62,7 @@ public class Rpg {
                     System.out.println("Good luck!");
                     return;
                 default:
-                    System.out.println(" ");
-
+                    System.out.println(": (");
             }
         }
     }
